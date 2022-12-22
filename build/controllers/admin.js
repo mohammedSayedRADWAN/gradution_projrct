@@ -54,6 +54,8 @@ exports.cheak = exports.deleteUser = exports.create = exports.show = exports.ind
 var admin_1 = require("../models/admin");
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 var role_list_1 = require("../confg/role_list");
+var loger_1 = require("../servieces/loger");
+var logger = new loger_1.LoggerService('Admin.controller');
 var info = new admin_1.userInfo();
 var index = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var users, error_1;
@@ -70,6 +72,7 @@ var index = function (req, res) { return __awaiter(void 0, void 0, void 0, funct
                             message: 'not found any users ,yet,please create users first'
                         })];
                 }
+                logger.info("return Admins List", users);
                 return [2 /*return*/, res.json({
                         status: 'success',
                         message: 'users show successed',
@@ -77,6 +80,7 @@ var index = function (req, res) { return __awaiter(void 0, void 0, void 0, funct
                     })];
             case 2:
                 error_1 = _a.sent();
+                logger.info("Error return Admins List", error_1);
                 res.status(500);
                 res.json(error_1.message);
                 return [3 /*break*/, 3];
@@ -96,11 +100,13 @@ var show = function (req, res) { return __awaiter(void 0, void 0, void 0, functi
             case 1:
                 user = _a.sent();
                 if (!user) {
+                    logger.error("Error show Admin", "".concat(req.body.id));
                     return [2 /*return*/, res.status(404).json({
                             status: 'error',
                             message: 'can not find this id'
                         })];
                 }
+                logger.info("return Admin by id", user);
                 return [2 /*return*/, res.json({
                         status: 'success',
                         message: 'user show successed',
@@ -108,6 +114,7 @@ var show = function (req, res) { return __awaiter(void 0, void 0, void 0, functi
                     })];
             case 2:
                 error_2 = _a.sent();
+                logger.info("Error return Admin by id", error_2);
                 res.status(500);
                 res.json(error_2.message);
                 return [3 /*break*/, 3];
@@ -117,7 +124,7 @@ var show = function (req, res) { return __awaiter(void 0, void 0, void 0, functi
 }); };
 exports.show = show;
 var create = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, newUser, tokenSecret, err_1;
+    var user, newUser, tokenSecret, error_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -135,17 +142,19 @@ var create = function (req, res) { return __awaiter(void 0, void 0, void 0, func
             case 1:
                 newUser = _a.sent();
                 tokenSecret = jsonwebtoken_1.default.sign(newUser, process.env.TOKEN_SECRET);
+                logger.info("create Admin", user);
                 return [2 /*return*/, res.json({
                         status: 'success',
-                        message: 'user created success',
+                        message: 'Admin created success',
                         data: __assign(__assign({}, newUser), { tokenSecret: tokenSecret })
                     })
                     //res.json(newUser)
                 ];
             case 2:
-                err_1 = _a.sent();
+                error_3 = _a.sent();
+                logger.info("Error create Admin", error_3);
                 res.status(500);
-                res.json(err_1.message);
+                res.json(error_3.message);
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
@@ -153,7 +162,7 @@ var create = function (req, res) { return __awaiter(void 0, void 0, void 0, func
 }); };
 exports.create = create;
 var deleteUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var deleted, error_3;
+    var deleted, error_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -162,20 +171,23 @@ var deleteUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
             case 1:
                 deleted = _a.sent();
                 if (!deleted) {
+                    logger.error("Error delete Admin", "".concat(req.body.id));
                     return [2 /*return*/, res.status(404).json({
                             status: 'error',
                             message: 'can not find this id'
                         })];
                 }
+                logger.info("delete Admin by id", deleted);
                 return [2 /*return*/, res.json({
                         status: 'success',
                         message: 'user delete successed',
                         data: { deleted: deleted }
                     })];
             case 2:
-                error_3 = _a.sent();
+                error_4 = _a.sent();
+                logger.info("Error deleted Admin", error_4);
                 res.status(500);
-                res.json(error_3.message);
+                res.json(error_4.message);
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
@@ -183,7 +195,7 @@ var deleteUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
 }); };
 exports.deleteUser = deleteUser;
 var cheak = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, tokenSecret, error_4;
+    var user, tokenSecret, error_5;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -195,21 +207,24 @@ var cheak = function (req, res) { return __awaiter(void 0, void 0, void 0, funct
                 user = _a.sent();
                 // console.log(user);
                 if (!user) {
+                    logger.error("Error SignIN Admin", "".concat(req.body.email, ",").concat(req.body.password_digest));
                     return [2 /*return*/, res.status(404).json({
                             status: 'error',
                             message: 'password is unvalid'
                         })];
                 }
                 tokenSecret = jsonwebtoken_1.default.sign({ user: user }, process.env.TOKEN_SECRET_admin);
+                logger.info("signIN Admin by id", user);
                 return [2 /*return*/, res.json({
                         status: 'success',
                         message: 'user authenticated success',
                         data: __assign(__assign({}, user), { tokenSecret: tokenSecret })
                     })];
             case 2:
-                error_4 = _a.sent();
+                error_5 = _a.sent();
+                logger.info("signIN deleted Admin", error_5);
                 res.status(500);
-                res.json(error_4.message);
+                res.json(error_5.message);
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }

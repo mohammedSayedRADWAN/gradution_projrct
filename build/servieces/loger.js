@@ -1,15 +1,4 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -46,47 +35,59 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BlackBox = void 0;
-var product_1 = require("../../models/product");
-var loger_1 = require("../../servieces/loger");
-var logger = new loger_1.LoggerService('user.controller');
-var info = new product_1.prodcutInfo();
-var BlackBox = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var product, BlackBox_1, err_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                product = {
-                    price: req.body.price,
-                    review_score: req.body.review_score,
-                    product_category_name: req.body.product_category_name
-                };
-                return [4 /*yield*/, info.BlackBox(product)];
-            case 1:
-                BlackBox_1 = _a.sent();
-                if (!BlackBox_1) {
-                    logger.error("can't apply BlackBox Tool for this product", "".concat(product));
-                    return [2 /*return*/, res.status(404).json({
-                            status: 'error',
-                            message: 'can not apply BlackBox Tool for this product'
-                        })];
-                }
-                logger.info("Apply Black Box TOol", BlackBox_1);
-                return [2 /*return*/, res.json({
-                        status: 'success',
-                        message: 'prediction successed',
-                        data: __assign({}, BlackBox_1)
-                    })];
-            case 2:
-                err_1 = _a.sent();
-                logger.info("Error Applying BlackBox TOol", err_1);
-                res.status(500);
-                res.json(err_1);
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
-        }
-    });
-}); };
-exports.BlackBox = BlackBox;
+exports.LoggerService = exports.dateFormat = void 0;
+var winston_1 = __importDefault(require("winston"));
+var dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+var dateFormat = function () {
+    return new Date(Date.now()).toLocaleString();
+};
+exports.dateFormat = dateFormat;
+var LoggerService = /** @class */ (function () {
+    function LoggerService(route) {
+        this.route = route;
+        var logger = winston_1.default.createLogger({
+            level: 'info',
+            format: winston_1.default.format.printf(function (info) {
+                var message = "".concat((0, exports.dateFormat)(), " |  ").concat(info.level.toUpperCase(), " | ").concat(info.message, " | ");
+                message = info.obj ? message + "data ".concat(JSON.stringify(info.obj), " | ") : message;
+                return message;
+            }),
+            transports: [
+                new winston_1.default.transports.Console(),
+                new winston_1.default.transports.File({ filename: "".concat(process.env.LOG_FILE_PATH, " / ").concat(route, ".log") }),
+            ],
+        });
+        this.logger = logger;
+    }
+    LoggerService.prototype.info = function (message, obj) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                this.logger.log('info', message, { obj: obj });
+                return [2 /*return*/];
+            });
+        });
+    };
+    LoggerService.prototype.error = function (message, obj) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                this.logger.log('error', message, { obj: obj });
+                return [2 /*return*/];
+            });
+        });
+    };
+    LoggerService.prototype.debug = function (message, obj) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                this.logger.log('debug', message, { obj: obj });
+                return [2 /*return*/];
+            });
+        });
+    };
+    return LoggerService;
+}());
+exports.LoggerService = LoggerService;

@@ -49,6 +49,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FuzzyTrend3 = exports.FuzzyTrend2 = exports.FuzzyTrend1 = void 0;
 var product_1 = require("../../models/product");
+var loger_1 = require("../../servieces/loger");
+var logger = new loger_1.LoggerService('user.controller');
 var info = new product_1.prodcutInfo();
 var FuzzyTrend1 = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var product, FuzzyTrend, err_1;
@@ -63,7 +65,14 @@ var FuzzyTrend1 = function (req, res) { return __awaiter(void 0, void 0, void 0,
                 return [4 /*yield*/, info.FuzzyTrend1(product)];
             case 1:
                 FuzzyTrend = _a.sent();
-                console.log(FuzzyTrend);
+                if (!FuzzyTrend) {
+                    logger.error("can't apply FuzzyTrend1 Tool for this product", "".concat(product));
+                    return [2 /*return*/, res.status(404).json({
+                            status: 'error',
+                            message: 'can not apply FuzzyTrend1 Tool for this product'
+                        })];
+                }
+                logger.info("Apply FuzzyTrend1 TOol", FuzzyTrend);
                 return [2 /*return*/, res.json({
                         status: 'success',
                         message: 'FuzzyTrend successed',
@@ -71,6 +80,7 @@ var FuzzyTrend1 = function (req, res) { return __awaiter(void 0, void 0, void 0,
                     })];
             case 2:
                 err_1 = _a.sent();
+                logger.error("Error Applying FuzzyTrend1 TOol", err_1);
                 res.status(500);
                 res.json(err_1);
                 return [3 /*break*/, 3];
@@ -89,9 +99,17 @@ var FuzzyTrend2 = function (req, res) { return __awaiter(void 0, void 0, void 0,
                     order_approved_at_start: req.body.order_approved_at_start,
                     order_approved_at_End: req.body.order_approved_at_End
                 };
+                if (!exports.FuzzyTrend2) {
+                    logger.error("can't apply FuzzyTrend2 Tool for this product", "".concat(product));
+                    return [2 /*return*/, res.status(404).json({
+                            status: 'error',
+                            message: 'can not apply FuzzyTrend2 Tool for this product'
+                        })];
+                }
                 return [4 /*yield*/, info.FuzzyTrend2(product)];
             case 1:
                 FuzzyTrend = _a.sent();
+                logger.info("Apply FuzzyTrend2 TOol", FuzzyTrend);
                 return [2 /*return*/, res.json({
                         status: 'success',
                         message: 'FuzzyTrend successed',
@@ -99,6 +117,7 @@ var FuzzyTrend2 = function (req, res) { return __awaiter(void 0, void 0, void 0,
                     })];
             case 2:
                 err_2 = _a.sent();
+                logger.info("Error Applying FuzzyTrend2 TOol", err_2);
                 res.status(500);
                 res.json(err_2);
                 return [3 /*break*/, 3];
@@ -118,9 +137,17 @@ var FuzzyTrend3 = function (req, res) { return __awaiter(void 0, void 0, void 0,
                     order_approved_at_End: req.body.order_approved_at_End,
                     product_category_name: req.body.product_category_name
                 };
+                if (!exports.FuzzyTrend3) {
+                    logger.error("can't apply FuzzyTrend3 Tool for this product", "".concat(product));
+                    return [2 /*return*/, res.status(404).json({
+                            status: 'error',
+                            message: 'can not apply FuzzyTrend3 Tool for this product'
+                        })];
+                }
                 return [4 /*yield*/, info.FuzzyTrend3(product)];
             case 1:
                 FuzzyTrend = _a.sent();
+                logger.info("Apply FuzzyTrend3 TOol", FuzzyTrend);
                 return [2 /*return*/, res.json({
                         status: 'success',
                         message: 'FuzzyTrend successed',
@@ -128,6 +155,7 @@ var FuzzyTrend3 = function (req, res) { return __awaiter(void 0, void 0, void 0,
                     })];
             case 2:
                 err_3 = _a.sent();
+                logger.info("Error Applying FuzzyTrend3 TOol", err_3);
                 res.status(500);
                 res.json(err_3);
                 return [3 /*break*/, 3];

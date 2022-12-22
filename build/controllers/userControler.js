@@ -53,6 +53,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.cheak = exports.deleteUser = exports.create = exports.show = exports.index = void 0;
 var user_1 = require("../models/user");
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+var loger_1 = require("../servieces/loger");
+var loger_2 = require("../servieces/loger");
+var auditService_1 = require("../audit/auditService");
+var auditAction_1 = require("../audit/auditAction");
+var logger = new loger_2.LoggerService('user.controller');
 var info = new user_1.userInfo();
 var index = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var users, error_1;
@@ -64,11 +69,14 @@ var index = function (req, res) { return __awaiter(void 0, void 0, void 0, funct
             case 1:
                 users = _a.sent();
                 if (!users) {
+                    logger.info("Error return users List", users);
                     return [2 /*return*/, res.status(404).json({
                             status: 'error',
                             message: 'not found any users ,yet,please create users first'
                         })];
                 }
+                logger.info("return users List", users);
+                (0, auditService_1.prepareAudit)(auditAction_1.actionList.GET_USER_LIST, users, new Error, "postman", (0, loger_1.dateFormat)());
                 return [2 /*return*/, res.json({
                         status: 'success',
                         message: 'users show successed',
@@ -76,6 +84,7 @@ var index = function (req, res) { return __awaiter(void 0, void 0, void 0, funct
                     })];
             case 2:
                 error_1 = _a.sent();
+                logger.info("Error return users List", error_1);
                 res.status(500);
                 res.json(error_1.message);
                 return [3 /*break*/, 3];
@@ -95,11 +104,13 @@ var show = function (req, res) { return __awaiter(void 0, void 0, void 0, functi
             case 1:
                 user = _a.sent();
                 if (!user) {
+                    logger.error("Error show user", "".concat(req.body.id));
                     return [2 /*return*/, res.status(404).json({
                             status: 'error',
                             message: 'can not find this id'
                         })];
                 }
+                logger.info("return user by id", user);
                 return [2 /*return*/, res.json({
                         status: 'success',
                         message: 'user show successed',
@@ -107,6 +118,7 @@ var show = function (req, res) { return __awaiter(void 0, void 0, void 0, functi
                     })];
             case 2:
                 error_2 = _a.sent();
+                logger.info("Error return user By Id", error_2);
                 res.status(500);
                 res.json(error_2.message);
                 return [3 /*break*/, 3];
@@ -116,7 +128,7 @@ var show = function (req, res) { return __awaiter(void 0, void 0, void 0, functi
 }); };
 exports.show = show;
 var create = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, newUser, tokenSecret, err_1;
+    var user, newUser, tokenSecret, error_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -128,12 +140,11 @@ var create = function (req, res) { return __awaiter(void 0, void 0, void 0, func
                     password_digest: req.body.password_digest,
                     roles: "BASIC"
                 };
-                return [4 /*yield*/, info.create(user)
-                    //console.log(req.body.user);
-                ];
+                return [4 /*yield*/, info.create(user)];
             case 1:
                 newUser = _a.sent();
                 tokenSecret = jsonwebtoken_1.default.sign(newUser, process.env.TOKEN_SECRET);
+                logger.info("create user ", newUser);
                 return [2 /*return*/, res.json({
                         status: 'success',
                         message: 'user created success',
@@ -142,9 +153,10 @@ var create = function (req, res) { return __awaiter(void 0, void 0, void 0, func
                     //res.json(newUser)
                 ];
             case 2:
-                err_1 = _a.sent();
+                error_3 = _a.sent();
+                logger.info("Error create user", error_3);
                 res.status(500);
-                res.json(err_1.message);
+                res.json(error_3.message);
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
@@ -152,7 +164,7 @@ var create = function (req, res) { return __awaiter(void 0, void 0, void 0, func
 }); };
 exports.create = create;
 var deleteUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var deleted, error_3;
+    var deleted, error_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -161,20 +173,23 @@ var deleteUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
             case 1:
                 deleted = _a.sent();
                 if (!deleted) {
+                    logger.error("Error delete user ", "".concat(req.body.id));
                     return [2 /*return*/, res.status(404).json({
                             status: 'error',
                             message: 'can not find this id'
                         })];
                 }
+                logger.info("delete user ", deleted);
                 return [2 /*return*/, res.json({
                         status: 'success',
                         message: 'user delete successed',
                         data: { deleted: deleted }
                     })];
             case 2:
-                error_3 = _a.sent();
+                error_4 = _a.sent();
+                logger.info("Error delete user", error_4);
                 res.status(500);
-                res.json(error_3.message);
+                res.json(error_4.message);
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
@@ -182,33 +197,33 @@ var deleteUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
 }); };
 exports.deleteUser = deleteUser;
 var cheak = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, tokenSecret, error_4;
+    var user, tokenSecret, error_5;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, info.athuntication(req.body.email, req.body.password_digest)
-                    // console.log(user);
-                ];
+                return [4 /*yield*/, info.athuntication(req.body.email, req.body.password_digest)];
             case 1:
                 user = _a.sent();
-                // console.log(user);
                 if (!user) {
+                    logger.error("Error signIN user", "".concat(req.body.email, ",").concat(req.body.password_digest));
                     return [2 /*return*/, res.status(404).json({
                             status: 'error',
                             message: 'password is unvalid'
                         })];
                 }
                 tokenSecret = jsonwebtoken_1.default.sign({ user: user }, process.env.TOKEN_SECRET);
+                logger.info("signIN user ", user);
                 return [2 /*return*/, res.json({
                         status: 'success',
                         message: 'user authenticated success',
                         data: __assign(__assign({}, user), { tokenSecret: tokenSecret })
                     })];
             case 2:
-                error_4 = _a.sent();
+                error_5 = _a.sent();
+                logger.error("Error signIN user", error_5);
                 res.status(500);
-                res.json(error_4.message);
+                res.json(error_5.message);
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
